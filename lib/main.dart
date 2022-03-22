@@ -129,25 +129,6 @@ class CustomBottomNavBar extends StatelessWidget {
     this.shape = const CircularNotchedRectangle(),
     required this.icons,
   });
-  //  {
-  //   List<IconData> list = [
-  //     Icons.menu,
-  //     Icons.search,
-  //     Icons.favorite,
-  //   ];
-
-  //   print(icons);
-
-  //   icons.map((element) {
-  //     final index = icons.indexOf(element);
-  //     list.insert(index, element);
-  //     print(element);
-  //     print(index);
-  //   });
-
-  //   this.icons = list;
-  //   print(list);
-  // }
 
   final FloatingActionButtonLocation fabLocation;
   final NotchedShape? shape;
@@ -166,31 +147,34 @@ class CustomBottomNavBar extends StatelessWidget {
       color: Colors.blue,
       child: IconTheme(
         data: IconThemeData(color: Theme.of(context).colorScheme.onPrimary),
-        child: Row(
-          children: <Widget>[
-            IconButton(
-              tooltip: 'Open navigation menu',
-              icon: Icon(icons.isNotEmpty ? icons[0] : defaultIcons[0]),
-              onPressed: () {},
-            ),
-            if (centerLocations.contains(fabLocation)) const Spacer(),
-            IconButton(
-              tooltip: 'Search',
-              icon: Icon(icons.length >= 2 ? icons[1] : defaultIcons[1]),
-              onPressed: () {},
-            ),
-            IconButton(
-              tooltip: 'Favorite',
-              icon: Icon(icons.length >= 3 ? icons[2]: defaultIcons[2]),
-              onPressed: () {},
-            ),
-            Spacer(),
-            IconButton(
-              tooltip: 'Configs',
-              icon: Icon(Icons.settings),
-              onPressed: () {},
-            ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            children: <Widget>[
+              IconButton(
+                tooltip: 'Open navigation menu',
+                icon: Icon(icons.isNotEmpty ? icons[0] : defaultIcons[0]),
+                onPressed: () {},
+              ),
+              if (centerLocations.contains(fabLocation)) const Spacer(),
+              IconButton(
+                tooltip: 'Search',
+                icon: Icon(icons.length >= 2 ? icons[1] : defaultIcons[1]),
+                onPressed: () {},
+              ),
+              IconButton(
+                tooltip: 'Favorite',
+                icon: Icon(icons.length >= 3 ? icons[2] : defaultIcons[2]),
+                onPressed: () {},
+              ),
+              Spacer(),
+              IconButton(
+                tooltip: 'Configs',
+                icon: Icon(Icons.settings),
+                onPressed: () {},
+              ),
+            ],
+          ),
         ),
       ),
     );
