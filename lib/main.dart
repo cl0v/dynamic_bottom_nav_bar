@@ -32,18 +32,14 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
+  var icons = <IconData>[];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: const CustomBottomNavBar(),
+      bottomNavigationBar: CustomBottomNavBar(
+        icons: icons,
+      ),
       appBar: AppBar(
         title: Text(widget.title),
       ),
@@ -54,18 +50,16 @@ class _MyHomePageState extends State<MyHomePage> {
             Text(
               'Selecione Apenas 3 controles',
             ),
-            Container(
-              height: 300,
-              width: 300,
-              child: GridButtons(),
+            Text(icons.toString()),
+            GridButtons(
+              onPressed: (icon) {
+                setState(() {
+                  icons.add(icon);
+                });
+              },
             ),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
       ),
     );
   }
@@ -84,7 +78,12 @@ const iconList = [
 ];
 
 class GridButtons extends StatefulWidget {
-  const GridButtons({Key? key}) : super(key: key);
+  const GridButtons({
+    Key? key,
+    required this.onPressed,
+  }) : super(key: key);
+
+  final Function(IconData icon) onPressed;
 
   @override
   State<GridButtons> createState() => _GridButtonsState();
@@ -93,56 +92,66 @@ class GridButtons extends StatefulWidget {
 class _GridButtonsState extends State<GridButtons> {
   @override
   Widget build(BuildContext context) {
-    return GridView(
-      gridDelegate:
-          SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
-      children: iconList.map(
-        (icon) => InkWell(
-          onTap: (){
-            print(icon);
-          },
-          child: Container(
-            margin: EdgeInsets.all(8),
-            color: Colors.red,
-            child: Center(
-              child: Icon(icon),
-            ),
-          ),
-        ),
-      ).toList(),
+    return Container(
+      height: 300,
+      width: 300,
+      child: GridView(
+        gridDelegate:
+            SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+        children: iconList
+            .map(
+              (icon) => InkWell(
+                onTap: () => widget.onPressed(icon),
+                child: Container(
+                  margin: EdgeInsets.all(8),
+                  color: Colors.red,
+                  child: Center(
+                    child: Icon(icon),
+                  ),
+                ),
+              ),
+            )
+            .toList(),
+      ),
     );
   }
 }
 
-class CustomBottomNavBar extends StatefulWidget {
-  const CustomBottomNavBar({Key? key}) : super(key: key);
+final defaultIcons = [
+  Icons.menu,
+  Icons.search,
+  Icons.favorite,
+];
 
-  @override
-  State<CustomBottomNavBar> createState() => _CustomBottomNavBarState();
-}
-
-class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
-  @override
-  Widget build(BuildContext context) {
-    return const _DemoBottomAppBar();
-  }
-}
-
-class _DemoBottomAppBar extends StatelessWidget {
-  const _DemoBottomAppBar({
+class CustomBottomNavBar extends StatelessWidget {
+  CustomBottomNavBar({
     this.fabLocation = FloatingActionButtonLocation.endDocked,
     this.shape = const CircularNotchedRectangle(),
-    this.icons = const [
-      Icons.menu,
-      Icons.search,
-      Icons.favorite,
-    ],
+    required this.icons,
   });
+  //  {
+  //   List<IconData> list = [
+  //     Icons.menu,
+  //     Icons.search,
+  //     Icons.favorite,
+  //   ];
+
+  //   print(icons);
+
+  //   icons.map((element) {
+  //     final index = icons.indexOf(element);
+  //     list.insert(index, element);
+  //     print(element);
+  //     print(index);
+  //   });
+
+  //   this.icons = list;
+  //   print(list);
+  // }
 
   final FloatingActionButtonLocation fabLocation;
   final NotchedShape? shape;
-
-  final List<IconData> icons;
+  final List<IconData?> icons;
 
   static final List<FloatingActionButtonLocation> centerLocations =
       <FloatingActionButtonLocation>[
@@ -161,18 +170,24 @@ class _DemoBottomAppBar extends StatelessWidget {
           children: <Widget>[
             IconButton(
               tooltip: 'Open navigation menu',
-              icon: Icon(icons[0]),
+              icon: Icon(icons.isNotEmpty ? icons[0] : defaultIcons[0]),
               onPressed: () {},
             ),
             if (centerLocations.contains(fabLocation)) const Spacer(),
             IconButton(
               tooltip: 'Search',
-              icon: Icon(icons[1]),
+              icon: Icon(icons.length >= 2 ? icons[1] : defaultIcons[1]),
               onPressed: () {},
             ),
             IconButton(
               tooltip: 'Favorite',
-              icon: Icon(icons[2]),
+              icon: Icon(icons.length >= 3 ? icons[2]: defaultIcons[2]),
+              onPressed: () {},
+            ),
+            Spacer(),
+            IconButton(
+              tooltip: 'Configs',
+              icon: Icon(Icons.settings),
               onPressed: () {},
             ),
           ],
