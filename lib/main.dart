@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:just_audio/just_audio.dart';
 
 // BottomNavBar que a pessoa pode customizar a vontade para servir de atalho.
 // Ela pode escolher até 3 funções, porem a principal sempre estará no canto direito(Ou esquerdo)
 
+final url = 'http://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Kangaroo_MusiQue_-_The_Neverwritten_Role_Playing_Game.mp3';
+final path = 'assets/sounds/8bt.ogg';
 void main() {
   runApp(const MyApp());
 }
@@ -35,6 +38,14 @@ class _MyHomePageState extends State<MyHomePage> {
   var icons = <IconData>[];
 
   @override
+  void initState() {
+    super.initState();
+    player = AudioPlayer()..setAsset(path);
+  }
+
+  late AudioPlayer player;
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: CustomBottomNavBar(
@@ -52,10 +63,15 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Text(icons.toString()),
             GridButtons(
-              onPressed: (icon) {
-                setState(() {
-                  icons.add(icon);
-                });
+              onPressed: (icon, isPlaying) async {
+                print('Deveria tocar');
+                player
+                    .play(); // Usually you don't want to wait for playback to finish.
+                await player.seek(Duration(seconds: 10));
+                await player.pause();
+                // setState(() {
+                //   icons.add(icon);
+                // });
               },
             ),
           ],
@@ -64,6 +80,8 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+
+//TODO: Balançar (RING) quando tiver tocando, para deixar claro que é aquele botão
 
 const iconList = [
   Icons.add_alert_outlined,
@@ -83,7 +101,7 @@ class GridButtons extends StatefulWidget {
     required this.onPressed,
   }) : super(key: key);
 
-  final Function(IconData icon) onPressed;
+  final Function(IconData icon, bool isPlaying) onPressed;
 
   @override
   State<GridButtons> createState() => _GridButtonsState();
@@ -98,20 +116,21 @@ class _GridButtonsState extends State<GridButtons> {
       child: GridView(
         gridDelegate:
             SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
-        children: iconList
-            .map(
-              (icon) => InkWell(
-                onTap: () => widget.onPressed(icon),
-                child: Container(
-                  margin: EdgeInsets.all(8),
-                  color: Colors.red,
-                  child: Center(
-                    child: Icon(icon),
-                  ),
+        children: iconList.map(
+          (icon) {
+            bool isPlaying = false;
+            return InkWell(
+              onTap: () => widget.onPressed(icon, !isPlaying),
+              child: Container(
+                margin: EdgeInsets.all(8),
+                color: Colors.red,
+                child: Center(
+                  child: Icon(icon),
                 ),
               ),
-            )
-            .toList(),
+            );
+          },
+        ).toList(),
       ),
     );
   }
